@@ -25,16 +25,20 @@ Distributed as-is; no warranty is given.
 ******************************************************************************/
 
 void setup() {
-  // initialize the serial communication:
+  //  initialize the serial communication
+  //  fro FireBettle  serial #
   Serial.begin(115200);
-  pinMode(10, INPUT); // Setup for leads off detection LO +
-  pinMode(11, INPUT); // Setup for leads off detection LO -
-
+  pinMode(10, INPUT); 
+  //  Setup for leads off detection LO +
+  pinMode(11, INPUT); 
+  //  Setup for leads off detection LO -
 }
 
 void loop() {
-    // send the value of analog input 0:
+    //  send the value of analog input 1:
+    //  video it explicitly states A1
       Serial.println(analogRead(A1));
   //Wait for a bit to keep serial data from saturating
   delay(250);
+  //  sending data in designated timeframe
 }
