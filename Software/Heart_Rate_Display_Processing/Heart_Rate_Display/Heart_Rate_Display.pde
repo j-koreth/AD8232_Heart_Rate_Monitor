@@ -47,7 +47,7 @@ void setup () {
   // List all the available serial ports
   println(Serial.list());
   // Open whatever port is the one you're using.
-  myPort = new Serial(this, Serial.list()[2], 9600);
+  myPort = new Serial(this, Serial.list()[2], 115200);
   // don't generate a serialEvent() unless you get a newline character:
   myPort.bufferUntil('\n');
   // set inital background:
