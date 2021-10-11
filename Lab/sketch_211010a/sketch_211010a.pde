@@ -30,7 +30,14 @@ void setup()
 {
   String portName = Serial.list()[4];
   myPort = new Serial(this, portName, 115200);
-
+  File file = new File("Arnav ECG data.txt");
+  try{
+    BufferedReader br = new BufferedReader(new FileReader(file));
+  }
+  catch(Exception e){
+    println("file load failed");
+  }
+  
   size(600, 500);
   
   cp5 = new ControlP5(this);
