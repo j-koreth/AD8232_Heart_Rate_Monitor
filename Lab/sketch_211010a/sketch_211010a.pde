@@ -32,8 +32,8 @@ int ecgDataX = 0;
 
 void setup()
 {
-  String portName = Serial.list()[4];
-  myPort = new Serial(this, portName, 115200);
+  //String portName = Serial.list()[COM3];
+  myPort = new Serial(this, "COM3", 115200);
   String[] lines = loadStrings("test.txt");
   
   for(int x = 0; x < lines.length; x++){
@@ -184,7 +184,7 @@ void draw()
           //print(val);
           myChart.push("incoming", breathing);
           
-          ecg = ecgData.get(ecgDataX);
+          //ecg = ecgData.get(ecgDataX);
           myChart3.push("incoming", ecg);
 
           ecgDataX++;
