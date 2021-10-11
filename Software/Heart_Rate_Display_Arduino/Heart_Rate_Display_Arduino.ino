@@ -37,7 +37,10 @@ void setup() {
 void loop() {
     //  send the value of analog input 1:
     //  video it explicitly states A1
-      Serial.println(analogRead(A1));
+       //Serial.print("A0:");
+       //Serial.println(analogRead(A0));
+       Serial.print("A1:");
+       Serial.println(analogRead(A1));
   //Wait for a bit to keep serial data from saturating
   delay(250);
   //  sending data in designated timeframe
