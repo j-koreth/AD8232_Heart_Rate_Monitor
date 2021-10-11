@@ -20,7 +20,10 @@ boolean workout = false;
 
 Chart myChart2;
 int rangeLimit = 40;
+int[] wow = {1,1,1,1,1,1};
+
 Textlabel textRHB;
+Textlabel textRHB2;
 Button meditate;
 Textlabel textMedidate;
 
@@ -98,8 +101,14 @@ void setup()
      
      
    textRHB = cp5.addTextlabel("textRHB")
-     .setText("Resting Heart Rate: ")
+     .setText("Respiratory Rate: ")
      .setPosition(350,60);
+     
+   textRHB2 = cp5.addTextlabel("textRHB2")
+     .setText("Resting Heart Rate: ")
+     .setPosition(350,80);
+     
+     
      
     age = cp5.addTextfield("age")
       .setPosition(350,115)
@@ -120,7 +129,10 @@ void setup()
            ;
       
       myChart2.setStrokeWeight(1.5);
-      
+        myChart2.addDataSet("earth");
+  myChart2.setColors("earth", color(102, 102, 102), color(76, 146, 207), color(50, 168, 82), color(227, 128, 48), color(224, 58, 58));
+  myChart2.updateData("earth",wow[0], wow[1], wow[2],wow[3],wow[4]);
+  
       meditate = cp5.addButton("startMedidate")
      .setPosition(350,400)
      .setSize(100,25)
@@ -151,6 +163,11 @@ int breathConsecutive = 0;
 
 ArrayList<Float> ecgAnalyzeData = new ArrayList<Float>();
 
+
+//Workout
+int restingHB = 0;
+boolean stoppedWorkout = false;
+
 void draw()
 {
   background(0);
@@ -163,7 +180,7 @@ void draw()
           String[] values = val.split(",");
           float breathing = Float.parseFloat(values[0].substring(2));
           float ecg = Float.parseFloat(values[1].substring(3));
-          float time = Float.parseFloat(values[2].substring(3));
+          //float time = Float.parseFloat(values[2].substring(3));
           //print(val);
           myChart.push("incoming", breathing);
           
@@ -174,6 +191,12 @@ void draw()
           if(ecgDataX == ecgData.size()){
             ecgDataX = 0;
           }
+          
+           if(!age.getText().isEmpty()){
+             restingHB = 220 - Integer.parseInt(age.getText());
+            //println(restingHB);
+            }
+          
           
           //RespBase
           if(setBase){
@@ -200,7 +223,8 @@ void draw()
             
             if(count >= 120){
               println(breathChange);
-              analyzedBPM();
+              textRHB2.setText("Resting Heart Rate: "+analyzedBPM());
+                ecgAnalyzeData.clear();
               textRHB.setText("Respiratory Rate: " + breathChange * 2);
               breathChange = 0;
               count = 0;
@@ -234,10 +258,11 @@ void draw()
             
             if(stopArbResp){
               println(breathChange);
+              cp5.get("heartbeatmeter").setValue(analyzedBPM());
+                ecgAnalyzeData.clear();
               cp5.get("respiratoryrate").setValue(breathChange * 2);
               breathChange = 0;
               prevavg = 0;
-              analyzedBPM();
               startedArbResp = false;
               stopArbResp = false;
             }
@@ -277,6 +302,52 @@ void draw()
               meditate.unlock();
             }
           }
+          
+          
+          if(workout){
+
+          ecgAnalyzeData.add(ecg);
+          
+         if(stoppedWorkout){
+           
+           int heartbeat = analyzedBPM();
+          println(heartbeat);
+          println(restingHB);
+          if(heartbeat < .6 * restingHB){
+               wow[0]+=ecgAnalyzeData.size();
+            
+          }
+          else if(heartbeat < .7 * restingHB){
+               wow[1]+=ecgAnalyzeData.size();
+            
+          }
+          else if(heartbeat < .8 * restingHB){
+               wow[2]+=ecgAnalyzeData.size();
+            
+          }
+          else if(heartbeat < .9 * restingHB){
+               wow[3]+=ecgAnalyzeData.size();
+            
+          }
+          else{
+               wow[4]+=ecgAnalyzeData.size();
+            
+          }
+          
+          if( wow[0] > rangeLimit || wow[1] > rangeLimit ||  wow[2] > rangeLimit || wow[3] > rangeLimit || wow[4] > rangeLimit){
+            rangeLimit+=ecgAnalyzeData.size();
+            myChart2.setRange(0, rangeLimit);
+          }
+          
+           ecgAnalyzeData.clear();
+          workout = false;
+          stoppedWorkout = false;
+          myChart2.updateData("earth",wow[0], wow[1], wow[2],wow[3],wow[4]);
+         }
+          
+          
+          
+          }
         }
       }
     }
@@ -302,11 +373,7 @@ public int analyzedBPM(){
     }
     prevAvg = f;
   }
-  
-  println("Count: "+ count);
-  println("Size: " + ecgAnalyzeData.size());
-  ecgAnalyzeData.clear();
-  return count;
+  return count * 6;
 
 }
 
@@ -334,10 +401,11 @@ public void startArb(int value){
 public void startWorkOut(int theValue){
   if(workout){
       startWorkOut.setLabel("Play");
-      workout = false;
+      stoppedWorkout = true;
+      
   }
   else{
-      workout = true;
       startWorkOut.setLabel("Pause");
+      workout = true;
   }
 }
