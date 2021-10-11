@@ -24,20 +24,21 @@ Textlabel textRHB;
 Button meditate;
 Textlabel textMedidate;
 
-
+ArrayList<Float> ecgData = new ArrayList<Float>();
+int ecgDataX = 0;
 
 void setup()
 {
   String portName = Serial.list()[4];
   myPort = new Serial(this, portName, 115200);
-  File file = new File("Arnav ECG data.txt");
-  try{
-    BufferedReader br = new BufferedReader(new FileReader(file));
-  }
-  catch(Exception e){
-    println("file load failed");
-  }
+  String[] lines = loadStrings("test.txt");
   
+  for(int x = 0; x < lines.length; x++){
+    if(!lines[x].isEmpty()){
+        ecgData.add(Float.parseFloat(lines[x]));
+    }
+  }
+
   size(600, 500);
   
   cp5 = new ControlP5(this);
@@ -148,7 +149,7 @@ float inhaleCount = 0;
 float exhaleCount = 0;
 int breathConsecutive = 0;
 
-
+ArrayList<Float> ecgAnalyzeData = new ArrayList<Float>();
 
 void draw()
 {
@@ -165,7 +166,14 @@ void draw()
           float time = Float.parseFloat(values[2].substring(3));
           //print(val);
           myChart.push("incoming", breathing);
+          
+          ecg = ecgData.get(ecgDataX);
           myChart3.push("incoming", ecg);
+
+          ecgDataX++;
+          if(ecgDataX == ecgData.size()){
+            ecgDataX = 0;
+          }
           
           //RespBase
           if(setBase){
@@ -188,9 +196,11 @@ void draw()
             println(breathingStatus);
             
             count++;
+            ecgAnalyzeData.add(ecg);
             
             if(count >= 120){
               println(breathChange);
+              analyzedBPM();
               textRHB.setText("Respiratory Rate: " + breathChange * 2);
               breathChange = 0;
               count = 0;
@@ -220,13 +230,14 @@ void draw()
             }
             prevavg = breathing;
             println(breathingStatus);
-            
+            ecgAnalyzeData.add(ecg);
             
             if(stopArbResp){
               println(breathChange);
               cp5.get("respiratoryrate").setValue(breathChange * 2);
               breathChange = 0;
               prevavg = 0;
+              analyzedBPM();
               startedArbResp = false;
               stopArbResp = false;
             }
@@ -271,7 +282,33 @@ void draw()
     }
 }
 
+public int analyzedBPM(){
+  float prevAvg = ecgAnalyzeData.get(0);
+  String status = "Downhill";
+  int count = 0;
+  for(Float f: ecgAnalyzeData){
+    //Downhill
+    if(f < prevAvg - 10){
+      if(!status.equals("Uphill")){
+        count++;
+      }
+      status = "Uphill";
+    }
+    if(f > 10 + prevAvg){
+      if(!status.equals("Downhill")){
+        count++;
+      }
+      status = "Downhill";
+    }
+    prevAvg = f;
+  }
+  
+  println("Count: "+ count);
+  println("Size: " + ecgAnalyzeData.size());
+  ecgAnalyzeData.clear();
+  return count;
 
+}
 
 public void getBaseline(int value){
   setBase = true;
