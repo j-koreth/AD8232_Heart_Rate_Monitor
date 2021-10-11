@@ -14,9 +14,9 @@ Resources:
 This program requires a Processing sketch to view the data in real time.
 
 Development environment specifics:
-	IDE: Arduino 1.0.5
-	Hardware Platform: Arduino Pro 3.3V/8MHz
-	AD8232 Heart Monitor Version: 1.0
+  IDE: Arduino 1.0.5
+  Hardware Platform: Arduino Pro 3.3V/8MHz
+  AD8232 Heart Monitor Version: 1.0
 
 This code is beerware. If you see me (or any other SparkFun employee) at the
 local pub, and you've found our code helpful, please buy us a round!
@@ -37,11 +37,13 @@ void setup() {
 void loop() {
     //  send the value of analog input 1:
     //  video it explicitly states A1
-       //Serial.print("A0:");
-       //Serial.println(analogRead(A0));
-       Serial.print("A1:");
-       Serial.println(analogRead(A1));
-  //Wait for a bit to keep serial data from saturating
-  delay(250);
+    Serial.print("B: "); 
+    Serial.print(analogRead(A1));
+    Serial.print(", E: "); 
+    Serial.print(analogRead(A0));
+    Serial.print(", T: "); 
+    Serial.println(millis());
+    //Wait for a bit to keep serial data from saturating
+    delay(250);
   //  sending data in designated timeframe
 }
