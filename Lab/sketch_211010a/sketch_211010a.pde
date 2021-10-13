@@ -32,8 +32,8 @@ int ecgDataX = 0;
 
 void setup()
 {
-  String portName = Serial.list()[4];
-  myPort = new Serial(this, portName, 115200);
+  //String portName = Serial.list()[COM3];
+  myPort = new Serial(this, "COM3", 115200);
   String[] lines = loadStrings("test.txt");
   
   for(int x = 0; x < lines.length; x++){
